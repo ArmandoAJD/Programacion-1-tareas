@@ -1,0 +1,71 @@
+Algoritmo Eleccion
+	Definir NUM_VOTANTES Como Entero
+	Definir NUM_RONDAS Como Entero
+	Definir MAX_CANDIDATOS Como Entero
+	NUM_VOTANTES <- 50
+	NUM_RONDAS <- 5
+	MAX_CANDIDATOS <- 10
+	Dimensionar candidatos(MAX_CANDIDATOS)
+	Dimensionar partidos(MAX_CANDIDATOS)
+	Dimensionar votos(MAX_CANDIDATOS,NUM_RONDAS)
+	Definir numCandidatos Como Entero
+	Definir opcion Como Cadena
+	Repetir
+		Escribir 'Ingrese el número de candidatos (máximo ', MAX_CANDIDATOS, '): '
+		Leer numCandidatos
+		Para i<-0 Hasta numCandidatos-1 Hacer
+			Escribir 'Ingrese el nombre del candidato ', i+1, ': '
+			Leer candidatos[i]
+			Escribir 'Ingrese el nombre del partido político de ', candidatos[i], ': '
+			Leer partidos[i]
+		FinPara
+		// Generar votación aleatoria
+		Para ronda<-0 Hasta NUM_RONDAS-1 Hacer
+			Para i<-0 Hasta numCandidatos-1 Hacer
+				votos[i,ronda]<-Aleatorio(0,NUM_VOTANTES)
+			FinPara
+		FinPara
+		// Mostrar resultados
+		Escribir '\nResultados de la elección:'
+		Escribir '---------------------------------------------------'
+		Escribir 'Candidato\tPartido'
+		Para ronda<-0 Hasta NUM_RONDAS-1 Hacer
+			Escribir '\tRonda ', ronda+1
+		FinPara
+		Escribir '\tTotal'
+		Escribir '---------------------------------------------------'
+		Dimensionar totalVotos(MAX_CANDIDATOS)
+		Para i<-0 Hasta numCandidatos-1 Hacer
+			totalVotos[i] <- 0
+			Escribir candidatos[i], '\t', partidos[i], '\t'
+			Para ronda<-0 Hasta NUM_RONDAS-1 Hacer
+				Escribir votos[i,ronda], '\t'
+				totalVotos[i] <- totalVotos[i]+votos[i,ronda]
+			FinPara
+			Escribir totalVotos[i]
+		FinPara
+		// Determinar ganador y perdedor
+		maxVotos <- totalVotos[0]
+		minVotos <- totalVotos[0]
+		ganador <- candidatos[0]
+		perdedor <- candidatos[0]
+		partidoGanador <- partidos[0]
+		partidoPerdedor <- partidos[0]
+		Para i<-1 Hasta numCandidatos-1 Hacer
+			Si totalVotos[i]>maxVotos Entonces
+				maxVotos <- totalVotos[i]
+				ganador <- candidatos[i]
+				partidoGanador <- partidos[i]
+			FinSi
+			Si totalVotos[i]<minVotos Entonces
+				minVotos <- totalVotos[i]
+				perdedor <- candidatos[i]
+				partidoPerdedor <- partidos[i]
+			FinSi
+		FinPara
+		Escribir '\nGanador de la elección: ', ganador, ' del partido ', partidoGanador, ' con ', maxVotos, ' votos.'
+		Escribir 'Candidato con menos votos: ', perdedor, ' del partido ', partidoPerdedor, ' con ', minVotos, ' votos.'
+		Escribir '\n¿Desea realizar otra elección? (s/n): '
+		Leer opcion
+	Hasta Que opcion<>'s' Y opcion<>'S'
+FinAlgoritmo
