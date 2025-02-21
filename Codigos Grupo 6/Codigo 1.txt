@@ -1,0 +1,90 @@
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+#include <iomanip>
+#include <algorithm>
+
+using namespace std;
+
+struct Equipo {
+    string nombre;
+    int jugados = 0, ganados = 0, perdidos = 0, empatados = 0;
+    int golesAFavor = 0, golesEnContra = 0, puntos = 0;
+};
+
+int generarGoles() { return rand() % 5; }
+
+void imprimirTablaPosiciones(Equipo equipos[], int n) {
+    sort(equipos, equipos + n, [](Equipo a, Equipo b) {
+        if (a.puntos != b.puntos) return a.puntos > b.puntos;
+        return (a.golesAFavor - a.golesEnContra) > (b.golesAFavor - b.golesEnContra);
+    });
+
+    cout << "\n=== Tabla de Posiciones ===\n";
+    cout << left << setw(12) << "Equipo" << setw(8) << "PJ" << setw(8) << "PG"
+         << setw(8) << "PP" << setw(8) << "PE" << setw(8) << "GF" << setw(8) 
+         << "GC" << setw(8) << "DG" << setw(8) << "Puntos" << endl;
+    cout << string(75, '-') << endl;
+
+    for (int i = 0; i < n; i++) {
+        int difGoles = equipos[i].golesAFavor - equipos[i].golesEnContra;
+        cout << left << setw(12) << equipos[i].nombre << setw(8) << equipos[i].jugados
+             << setw(8) << equipos[i].ganados << setw(8) << equipos[i].perdidos
+             << setw(8) << equipos[i].empatados << setw(8) << equipos[i].golesAFavor
+             << setw(8) << equipos[i].golesEnContra << setw(8) << difGoles
+             << setw(8) << equipos[i].puntos << endl;
+    }
+}
+
+void imprimirTablaResultados(Equipo equipos[], int resultados[6][6], int n) {
+    cout << "\n=== Tabla de Resultados ===\n";
+    cout << right << setw(10) << " ";
+    for (int i = 0; i < n; i++) cout << setw(8) << equipos[i].nombre;
+    cout << "\n" << string(10 + 8 * n, '-') << endl;
+
+    for (int i = 0; i < n; i++) {
+        cout << left << setw(10) << equipos[i].nombre;
+        for (int j = 0; j < n; j++) {
+            cout << setw(8) << (i == j ? "X" : to_string(resultados[i][j]) + "-" + to_string(resultados[j][i]));
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+    srand(time(0));
+    int n = 6;
+    Equipo equipos[n];
+    int resultados[6][6] = {0};
+
+    cout << "Ingrese los nombres de los 6 equipos:\n";
+    for (int i = 0; i < n; i++) {
+        cout << "Equipo " << i + 1 << ": ";
+        cin >> equipos[i].nombre;
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            int goles1 = generarGoles(), goles2 = generarGoles();
+            resultados[i][j] = goles1;
+            resultados[j][i] = goles2;
+
+            equipos[i].jugados++, equipos[j].jugados++;
+            equipos[i].golesAFavor += goles1, equipos[j].golesAFavor += goles2;
+            equipos[i].golesEnContra += goles2, equipos[j].golesEnContra += goles1;
+
+            if (goles1 > goles2) equipos[i].ganados++, equipos[j].perdidos++, equipos[i].puntos += 3;
+            else if (goles1 < goles2) equipos[j].ganados++, equipos[i].perdidos++, equipos[j].puntos += 3;
+            else equipos[i].empatados++, equipos[j].empatados++, equipos[i].puntos++, equipos[j].puntos++;
+        }
+    }
+
+    imprimirTablaPosiciones(equipos, n);
+    imprimirTablaResultados(equipos, resultados, n);
+
+    cout << "\n🏆 El equipo GANADOR es: " << equipos[0].nombre << endl;
+    cout << "⬇ El equipo que BAJA CATEGORIA es: " << equipos[n - 1].nombre << endl;
+
+    return 0;
+}
